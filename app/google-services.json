@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "816267877679",
+    "project_id": "digilearn-14898",
+    "storage_bucket": "digilearn-14898.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816267877679:android:d299db4d0efae119f3d5da",
+        "android_client_info": {
+          "package_name": "com.av.digiLearn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDysSEXvisJio8v_A04PyFISzEmqo8-u0s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
