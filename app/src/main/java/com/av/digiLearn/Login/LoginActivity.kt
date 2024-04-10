@@ -42,13 +42,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.av.digiLearn.Dashboard.DashboardActivity
-import com.av.digiLearn.MainActivity
 import com.av.digiLearn.R
 import com.av.digiLearn.Register.RegisterActivity
 import com.av.digiLearn.Viewmodel.LoginViewModel
-import com.av.digiLearn.Viewmodel.WeatherViewModel
 import com.av.digiLearn.ui.theme.DigiLearnTheme
 
 class LoginActivity : ComponentActivity() {
@@ -67,35 +64,35 @@ class LoginActivity : ComponentActivity() {
 
                 )
                 {
-                LoginActivityLayout()
-                 }
+                    LoginActivityLayout()
+                }
             }
         }
 
-        val loginStatusObserver = Observer<Boolean> {
-            status ->
-            if (status)
-            {
-                Toast.makeText(this,"Success",Toast.LENGTH_LONG)
-                startActivity(Intent(this,DashboardActivity::class.java))
+        val loginStatusObserver = Observer<Boolean> { status ->
+            if (status) {
+                Toast.makeText(this, "Success", Toast.LENGTH_LONG)
+                startActivity(Intent(this, DashboardActivity::class.java))
                 finish()
-            }
-            else
-            {
-                Toast.makeText(this,"Failed",Toast.LENGTH_LONG)
+            } else {
+                Toast.makeText(this, "Failed", Toast.LENGTH_LONG)
             }
         }
 
-        viewModel.loginStatus.observe(this,loginStatusObserver);
+        viewModel.loginStatus.observe(this, loginStatusObserver);
     }
 
     @Composable
     private fun LoginActivityLayout() {
-        Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
             Image(
                 painter = painterResource(id = R.drawable.weather_icon),
                 contentDescription = "Weather Icon",
-                modifier = Modifier.height(100.dp).width(100.dp).align(Alignment.CenterHorizontally).padding(0.dp,12.dp)
+                modifier = Modifier
+                    .height(100.dp)
+                    .width(100.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(0.dp, 12.dp)
             )
             TitleTextField()
             UsernameTextField()
@@ -107,7 +104,14 @@ class LoginActivity : ComponentActivity() {
 
     private @Composable
     fun TitleTextField() {
-        Text(text = "Know Your Weather", modifier = Modifier.fillMaxWidth().padding(0.dp,12.dp), textAlign = TextAlign.Center,fontWeight = FontWeight.Bold)
+        Text(
+            text = "Know Your Weather",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 12.dp),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold
+        )
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -159,13 +163,12 @@ class LoginActivity : ComponentActivity() {
                     contentDescription = null, // Provide a content description
                     tint = Color.Gray // Set your desired tint color
                 )
-            }
-            , visualTransformation = PasswordVisualTransformation()
+            }, visualTransformation = PasswordVisualTransformation()
         )
     }
 
     @Composable
-    fun LoginButton(){
+    fun LoginButton() {
         Button(modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
@@ -177,12 +180,11 @@ class LoginActivity : ComponentActivity() {
     }
 
     private fun userLogin(email: String, password: String) {
-        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password))
-        {
-            Toast.makeText(this,"Enter email and password",Toast.LENGTH_LONG).show()
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            Toast.makeText(this, "Enter email and password", Toast.LENGTH_LONG).show()
             return
         }
-        viewModel.loginUserWithEmailAndPassword(email,password)
+        viewModel.loginUserWithEmailAndPassword(email, password)
     }
 
     @Composable
@@ -204,19 +206,18 @@ class LoginActivity : ComponentActivity() {
 
     private fun reload() {
         val currentUser = viewModel.auth.currentUser
-        if (currentUser!=null)
-        {
-            startActivity(Intent(this,DashboardActivity::class.java))
+        if (currentUser != null) {
+            startActivity(Intent(this, DashboardActivity::class.java))
         }
     }
 
     @Preview
     @Composable
-    fun preview()
-    {
+    fun preview() {
         DigiLearnTheme {
-            Surface(modifier = Modifier.fillMaxSize()
-                , color = Color.White){
+            Surface(
+                modifier = Modifier.fillMaxSize(), color = Color.White
+            ) {
                 LoginActivityLayout()
             }
 

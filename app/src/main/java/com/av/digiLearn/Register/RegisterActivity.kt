@@ -1,10 +1,10 @@
 package com.av.digiLearn.Register
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -59,29 +58,33 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       setContent {
-           DigiLearnTheme {
-               Surface(
-                   modifier = Modifier.fillMaxSize(),
-                   color = MaterialTheme.colorScheme.background
-               )
-               {
+        setContent {
+            DigiLearnTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                )
+                {
 
-               RegisterActivityLayout()
-               }
-           }
-       }
+                    RegisterActivityLayout()
+                }
+            }
+        }
 
         viewModel = ViewModelProvider(this).get(RegisterViewModel::class.java);
     }
 
     @Composable
     fun RegisterActivityLayout() {
-        Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
             Image(
                 painter = painterResource(id = R.drawable.registration_icon),
                 contentDescription = "Weather Icon",
-                modifier = Modifier.height(100.dp).width(100.dp).align(Alignment.CenterHorizontally).padding(0.dp,12.dp)
+                modifier = Modifier
+                    .height(100.dp)
+                    .width(100.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(0.dp, 12.dp)
             )
 
             TitleTextField()
@@ -91,39 +94,46 @@ class RegisterActivity : AppCompatActivity() {
             LogInTextField()
         }
 
-        val loginStatusObserver = Observer<Boolean> {
-                status ->
-            if (status)
-            {
+        val loginStatusObserver = Observer<Boolean> { status ->
+            if (status) {
                 startActivity(Intent(this, DashboardActivity::class.java))
-                Toast.makeText(this,"Success",Toast.LENGTH_LONG)
+                Toast.makeText(this, "Success", Toast.LENGTH_LONG)
                 finish()
-            }
-            else
-            {
-                Toast.makeText(this,"Failed",Toast.LENGTH_LONG)
+            } else {
+                Toast.makeText(this, "Failed", Toast.LENGTH_LONG)
             }
         }
 
-        viewModel.loginStatus.observe(this,loginStatusObserver);
+        viewModel.loginStatus.observe(this, loginStatusObserver);
     }
 
     private @Composable
     fun TitleTextField() {
-        Text(text = "Registration", modifier = Modifier.fillMaxWidth().padding(0.dp,12.dp), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)    }
+        Text(
+            text = "Registration",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 12.dp),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold
+        )
+    }
 
     @Composable
     fun LogInTextField() {
         Text(text = "Already have an Account?",
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().padding(0.dp,24.dp).clickable {
-            startActivity(Intent(this, LoginActivity::class.java));
-                finish()
-        })
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 24.dp)
+                .clickable {
+                    startActivity(Intent(this, LoginActivity::class.java));
+                    finish()
+                })
     }
 
     @Composable
-    fun RegisterButton(){
+    fun RegisterButton() {
         Button(modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
@@ -183,18 +193,16 @@ class RegisterActivity : AppCompatActivity() {
                     contentDescription = null, // Provide a content description
                     tint = Color.Gray // Set your desired tint color
                 )
-            }
-        , visualTransformation = PasswordVisualTransformation()
+            }, visualTransformation = PasswordVisualTransformation()
         )
     }
 
     @Preview
     @Composable
-    fun preview()
-    {
+    fun preview() {
         DigiLearnTheme {
-            Surface(modifier = Modifier.fillMaxSize()
-                , color = Color.White
+            Surface(
+                modifier = Modifier.fillMaxSize(), color = Color.White
             ) {
                 RegisterActivityLayout()
             }
@@ -203,19 +211,18 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-      /*  val currentUser = viewModel.auth.currentUser
-        if (currentUser!=null)
-        {
-            reload();
-        }*/
+        /*  val currentUser = viewModel.auth.currentUser
+          if (currentUser!=null)
+          {
+              reload();
+          }*/
     }
 
     private fun reload() {
         startActivity(Intent(this, LoginActivity::class.java));
     }
 
-    private fun userRegister(email: String, password: String)
-    {
-        viewModel.createUserWithEmailAndPassword(email,password)
+    private fun userRegister(email: String, password: String) {
+        viewModel.createUserWithEmailAndPassword(email, password)
     }
 }

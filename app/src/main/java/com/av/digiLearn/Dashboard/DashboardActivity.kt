@@ -3,7 +3,6 @@ package com.av.digiLearn.Dashboard
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -100,7 +99,7 @@ class DashboardActivity : ComponentActivity() {
                 unselectedIcon = Icons.Outlined.DateRange
             )
 
-            val tabBarItems = listOf(homeTab,moreTab)
+            val tabBarItems = listOf(homeTab, moreTab)
 
             val navController = rememberNavController()
 
@@ -121,6 +120,7 @@ class DashboardActivity : ComponentActivity() {
                             }
                         }
                     }
+                    initialize("Kathmandu")
                 }
             }
         }
@@ -130,7 +130,7 @@ class DashboardActivity : ComponentActivity() {
     @Composable
     private fun HomeTab(homeTab: TabBarItem) {
         var weatherDataState by remember { mutableStateOf<CurrentWeatherResponse?>(null) }
-        var country by remember { mutableStateOf("Kathmandu") }
+        var country by remember { mutableStateOf("") }
 
         lifecycleScope.launchWhenStarted {
             weatherViewModel.currentWeatherDataStateFlow.collectLatest {
@@ -175,9 +175,11 @@ class DashboardActivity : ComponentActivity() {
                 Button(
                     onClick = {
                         weatherViewModel.getCurrentWeatherData(country)
-                              weatherViewModel.getForecastWeatherData(country)
-                              },
-                    modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                        weatherViewModel.getForecastWeatherData(country)
+                    },
+                    modifier = Modifier
+                        .align(alignment = Alignment.CenterHorizontally)
+                        .fillMaxWidth()
                 ) {
                     Text(text = "Search")
                 }
@@ -186,6 +188,13 @@ class DashboardActivity : ComponentActivity() {
                 }
                 //       Text(text = )
             }
+        }
+    }
+
+    private fun initialize(country: String?) {
+        country?.let {
+            weatherViewModel.getCurrentWeatherData(it)
+            weatherViewModel.getForecastWeatherData(it)
         }
     }
 
@@ -485,7 +494,7 @@ class DashboardActivity : ComponentActivity() {
                 .fillMaxSize()
                 .padding(16.dp, 32.dp, 16.dp, 64.dp)
         ) {
-             if (forecastWeatherDataState != null) {
+            if (forecastWeatherDataState != null) {
                 var forecastDayList: List<ForecastdayItem?> =
                     forecastWeatherDataState?.forecast?.forecastday ?: emptyList()
                 Text(
@@ -498,54 +507,54 @@ class DashboardActivity : ComponentActivity() {
                     style = TextStyle(fontWeight = FontWeight.Light)
                 )
 
-                    LazyColumn(modifier = Modifier.padding(0.dp,32.dp)) {
-            /*            item{
-                            LogOutBtn()
-                        }*/
-                        items(forecastDayList) { forecastDay ->
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(0.dp, 8.dp)
-                            ) {
-                                Column(Modifier.padding(16.dp)) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(0.dp, 8.dp, 0.dp, 0.dp),
+                LazyColumn(modifier = Modifier.padding(0.dp, 32.dp)) {
+                    /*            item{
+                                    LogOutBtn()
+                                }*/
+                    items(forecastDayList) { forecastDay ->
+                        ElevatedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(0.dp, 8.dp)
+                        ) {
+                            Column(Modifier.padding(16.dp)) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(0.dp, 8.dp, 0.dp, 0.dp),
+                                ) {
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        horizontalAlignment = Alignment.Start
                                     ) {
-                                        Column(
-                                            modifier = Modifier.weight(1f),
-                                            horizontalAlignment = Alignment.Start
-                                        ) {
-                                            Text(
-                                                text = forecastDay?.date.toString(),
-                                                style = TextStyle(fontWeight = FontWeight.Bold)
-                                            )
-                                            Text(
-                                                text = forecastDay?.day?.avgtempF.toString() + "°",
-                                                style = TextStyle(fontWeight = FontWeight.Bold),
-                                                fontSize = 64.sp
-                                            )
-                                            Text(text = "Humidity: " + forecastDay?.day?.avghumidity + ", " + "Wind: " + forecastDay?.day?.maxwindMph)
-                                        }
-                                        Column(
-                                            modifier = Modifier.weight(1f),
-                                            horizontalAlignment = Alignment.End
-                                        ) {
-                                            Text(
-                                                text = forecastDay?.day?.condition?.text.toString(),
-                                                style = TextStyle(fontWeight = FontWeight.Bold),
-                                                fontSize = 16.sp
-                                            )
-                                            ImageFromCDN(url = forecastDay?.day?.condition?.icon?.let { "https:$it" }
-                                                ?: "")
-                                            Text(text = "Feels like " + forecastDay?.day?.maxtempF)
-                                        }
+                                        Text(
+                                            text = forecastDay?.date.toString(),
+                                            style = TextStyle(fontWeight = FontWeight.Bold)
+                                        )
+                                        Text(
+                                            text = forecastDay?.day?.avgtempF.toString() + "°",
+                                            style = TextStyle(fontWeight = FontWeight.Bold),
+                                            fontSize = 64.sp
+                                        )
+                                        Text(text = "Humidity: " + forecastDay?.day?.avghumidity + ", " + "Wind: " + forecastDay?.day?.maxwindMph)
+                                    }
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        horizontalAlignment = Alignment.End
+                                    ) {
+                                        Text(
+                                            text = forecastDay?.day?.condition?.text.toString(),
+                                            style = TextStyle(fontWeight = FontWeight.Bold),
+                                            fontSize = 16.sp
+                                        )
+                                        ImageFromCDN(url = forecastDay?.day?.condition?.icon?.let { "https:$it" }
+                                            ?: "")
+                                        Text(text = "Feels like " + forecastDay?.day?.maxtempF)
                                     }
                                 }
                             }
                         }
+                    }
                 }
 
             }
