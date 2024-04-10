@@ -1,42 +1,51 @@
-package com.av.digiLearn
+package com.av.digiLearn.Register
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.av.digiLearn.Dashboard.DashboardActivity
 import com.av.digiLearn.Login.LoginActivity
+import com.av.digiLearn.R
 import com.av.digiLearn.Viewmodel.RegisterViewModel
 import com.av.digiLearn.ui.theme.DigiLearnTheme
 
@@ -44,55 +53,96 @@ import com.av.digiLearn.ui.theme.DigiLearnTheme
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var viewModel: RegisterViewModel
+    var email by mutableStateOf("")
+    var password by mutableStateOf("")
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
        setContent {
            DigiLearnTheme {
-               Surface(modifier = Modifier.fillMaxSize()
-                   , color = Color.White
-               ) {
-                   RegisterActivityLayout()
+               Surface(
+                   modifier = Modifier.fillMaxSize(),
+                   color = MaterialTheme.colorScheme.background
+               )
+               {
+
+               RegisterActivityLayout()
                }
            }
        }
 
         viewModel = ViewModelProvider(this).get(RegisterViewModel::class.java);
-
-  //      userRegister("avashpalikhe@gmail.com","123456");
     }
 
     @Composable
     fun RegisterActivityLayout() {
         Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-            Text(text = "Welcome to DigiLearn", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+            Image(
+                painter = painterResource(id = R.drawable.registration_icon),
+                contentDescription = "Weather Icon",
+                modifier = Modifier.height(100.dp).width(100.dp).align(Alignment.CenterHorizontally).padding(0.dp,12.dp)
+            )
+
+            TitleTextField()
             UsernameTextField()
             PasswordTextField()
-            LoginButton()
+            RegisterButton()
+            LogInTextField()
         }
+
+        val loginStatusObserver = Observer<Boolean> {
+                status ->
+            if (status)
+            {
+                startActivity(Intent(this, DashboardActivity::class.java))
+                Toast.makeText(this,"Success",Toast.LENGTH_LONG)
+                finish()
+            }
+            else
+            {
+                Toast.makeText(this,"Failed",Toast.LENGTH_LONG)
+            }
+        }
+
+        viewModel.loginStatus.observe(this,loginStatusObserver);
+    }
+
+    private @Composable
+    fun TitleTextField() {
+        Text(text = "Registration", modifier = Modifier.fillMaxWidth().padding(0.dp,12.dp), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)    }
+
+    @Composable
+    fun LogInTextField() {
+        Text(text = "Already have an Account?",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(0.dp,24.dp).clickable {
+            startActivity(Intent(this, LoginActivity::class.java));
+                finish()
+        })
     }
 
     @Composable
-    fun LoginButton(){
+    fun RegisterButton(){
         Button(modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp).padding(16.dp,0.dp), onClick = { /*TODO*/ }) {
-            Text(text = "Login")
+            .height(56.dp)
+            .padding(16.dp, 0.dp), onClick = {
+            userRegister(email, password);
+        }) {
+            Text(text = "Register")
         }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun UsernameTextField() {
-        var username by remember { mutableStateOf("") }
-
         TextField(
-            value = username,
-            onValueChange = { newText -> username = newText },
-            placeholder = { Text(text = "Enter User Name") },
+            value = email,
+            onValueChange = { newText -> email = newText },
+            placeholder = { Text(text = "Enter Email") },
             singleLine = true,
             modifier = Modifier
-                .background(color = Color.White)
                 .padding(16.dp)
                 .fillMaxWidth()
                 .height(56.dp),
@@ -113,8 +163,6 @@ class RegisterActivity : AppCompatActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun PasswordTextField() {
-        var password by remember { mutableStateOf("") }
-
         TextField(
             value = password,
             onValueChange = { newText -> password = newText },

@@ -1,183 +1,225 @@
 package com.av.digiLearn.Login
 
-import android.content.res.Configuration
-import android.graphics.drawable.GradientDrawable.Orientation
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.av.digiLearn.Dashboard.DashboardActivity
+import com.av.digiLearn.MainActivity
 import com.av.digiLearn.R
+import com.av.digiLearn.Register.RegisterActivity
+import com.av.digiLearn.Viewmodel.LoginViewModel
+import com.av.digiLearn.Viewmodel.WeatherViewModel
 import com.av.digiLearn.ui.theme.DigiLearnTheme
 
 class LoginActivity : ComponentActivity() {
+    private val viewModel by lazy { LoginViewModel() }
+    var email by mutableStateOf("AvashPalikhe@gmail.com")
+    var password by mutableStateOf("123456")
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             DigiLearnTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    Conversation(SampleData.conversationSample)
-                }
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+
+                )
+                {
+                LoginActivityLayout()
+                 }
             }
+        }
+
+        val loginStatusObserver = Observer<Boolean> {
+            status ->
+            if (status)
+            {
+                Toast.makeText(this,"Success",Toast.LENGTH_LONG)
+                startActivity(Intent(this,DashboardActivity::class.java))
+                finish()
+            }
+            else
+            {
+                Toast.makeText(this,"Failed",Toast.LENGTH_LONG)
+            }
+        }
+
+        viewModel.loginStatus.observe(this,loginStatusObserver);
+    }
+
+    @Composable
+    private fun LoginActivityLayout() {
+        Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+            Image(
+                painter = painterResource(id = R.drawable.weather_icon),
+                contentDescription = "Weather Icon",
+                modifier = Modifier.height(100.dp).width(100.dp).align(Alignment.CenterHorizontally).padding(0.dp,12.dp)
+            )
+            TitleTextField()
+            UsernameTextField()
+            PasswordTextField()
+            LoginButton()
+            RegisterTextField()
         }
     }
 
-    data class Message(val author: String, val body: String)
+    private @Composable
+    fun TitleTextField() {
+        Text(text = "Know Your Weather", modifier = Modifier.fillMaxWidth().padding(0.dp,12.dp), textAlign = TextAlign.Center,fontWeight = FontWeight.Bold)
+    }
 
-    /**
-     * SampleData for Jetpack Compose Tutorial
-     */
-    object SampleData {
-        // Sample conversation data
-        val conversationSample = listOf(
-            Message(
-                "Lexi", "Test...Test...Test..."
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun UsernameTextField() {
+        TextField(
+            value = email,
+            onValueChange = { newText -> email = newText },
+            placeholder = { Text(text = "Enter Email") },
+            singleLine = true,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .height(56.dp),
+            textStyle = TextStyle(
+                color = Color.White,
+                fontFamily = FontFamily.SansSerif
             ),
-            Message(
-                "Lexi", """List of Android versions:
-            |Android KitKat (API 19)
-            |Android Lollipop (API 21)
-            |Android Marshmallow (API 23)
-            |Android Nougat (API 24)
-            |Android Oreo (API 26)
-            |Android Pie (API 28)
-            |Android 10 (API 29)
-            |Android 11 (API 30)
-            |Android 12 (API 31)""".trim()
-            ),
-            Message(
-                "Lexi", """I think Kotlin is my favorite programming language.
-            |It's so much fun!""".trim()
-            ),
-            Message(
-                "Lexi", "Searching for alternatives to XML layouts..."
-            ),
-            Message(
-                "Lexi", """Hey, take a look at Jetpack Compose, it's great!
-            |It's the Android's modern toolkit for building native UI.
-            |It simplifies and accelerates UI development on Android.
-            |Less code, powerful tools, and intuitive Kotlin APIs :)""".trim()
-            ),
-            Message(
-                "Lexi", "It's available from API 21+ :)"
-            ),
-            Message(
-                "Lexi",
-                "Writing Kotlin for UI seems so natural, Compose where have you been all my life?"
-            ),
-            Message(
-                "Lexi", "Android Studio next version's name is Arctic Fox"
-            ),
-            Message(
-                "Lexi", "Android Studio Arctic Fox tooling for Compose is top notch ^_^"
-            ),
-            Message(
-                "Lexi", "I didn't know you can now run the emulator directly from Android Studio"
-            ),
-            Message(
-                "Lexi",
-                "Compose Previews are great to check quickly how a composable layout looks like"
-            ),
-            Message(
-                "Lexi", "Previews are also interactive after enabling the experimental setting"
-            ),
-            Message(
-                "Lexi", "Have you tried writing build.gradle with KTS?"
-            ),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle, // Replace with your icon resource
+                    contentDescription = null, // Provide a content description
+                    tint = Color.Gray // Set your desired tint color
+                )
+            },
         )
     }
 
-
-}
-@Preview
-@Composable
-fun preview()
-{
-    DigiLearnTheme {
-        Surface {
-            Conversation(LoginActivity.SampleData.conversationSample)
-        }
-        
-    }
-}
-
-@Composable
-fun Conversation(conversationSample: List<LoginActivity.Message>) {
-    LazyColumn {
-        items(conversationSample) { message ->
-            MessageCard(message)
-        }
-    }
-}
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MessageCard(msg: LoginActivity.Message) {
-        Row(
-            modifier = Modifier.padding(all = 8.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
-                contentDescription = "Contact profile picture",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-
-            var isExpanded by remember {
-                mutableStateOf(false) }
-            val surfaceColor by animateColorAsState(
-                if (isExpanded)  MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,)
-
-            Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
-                Text(
-                    text = msg.author,
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleSmall
+    fun PasswordTextField() {
+        TextField(
+            value = password,
+            onValueChange = { newText -> password = newText },
+            placeholder = { Text(text = "Enter Password") },
+            singleLine = true,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(color = Color.White),
+            textStyle = TextStyle(
+                color = Color.Black,
+                fontFamily = FontFamily.SansSerif
+            ),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock, // Replace with your icon resource
+                    contentDescription = null, // Provide a content description
+                    tint = Color.Gray // Set your desired tint color
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Surface(
-                    shape = MaterialTheme.shapes.medium,
-                    shadowElevation = 1.dp,
-                    color = surfaceColor,
-                    modifier = Modifier.animateContentSize().padding(1.dp)
-                ) {
-                    Text(
-                        text = msg.body,
-                        modifier = Modifier.padding(all = 4.dp),
-                        maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
             }
+            , visualTransformation = PasswordVisualTransformation()
+        )
+    }
+
+    @Composable
+    fun LoginButton(){
+        Button(modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .padding(16.dp, 0.dp), onClick = {
+            userLogin(email, password);
+        }) {
+            Text(text = "Login")
         }
+    }
+
+    private fun userLogin(email: String, password: String) {
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password))
+        {
+            Toast.makeText(this,"Enter email and password",Toast.LENGTH_LONG).show()
+            return
+        }
+        viewModel.loginUserWithEmailAndPassword(email,password)
+    }
+
+    @Composable
+    fun RegisterTextField() {
+        Text(text = "Register",
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 24.dp)
+                .clickable {
+                    startActivity(Intent(this, RegisterActivity::class.java));
+                })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        reload()
+    }
+
+    private fun reload() {
+        val currentUser = viewModel.auth.currentUser
+        if (currentUser!=null)
+        {
+            startActivity(Intent(this,DashboardActivity::class.java))
+        }
+    }
+
+    @Preview
+    @Composable
+    fun preview()
+    {
+        DigiLearnTheme {
+            Surface(modifier = Modifier.fillMaxSize()
+                , color = Color.White){
+                LoginActivityLayout()
+            }
+
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.av.digiLearn.Viewmodel
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -11,6 +12,11 @@ class RegisterViewModel: ViewModel() {
     private val TAG ="REGISTER_TAG";
     var auth = Firebase.auth;
 
+    val loginStatus : MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
+
+
 
     fun createUserWithEmailAndPassword(email: String, password: String)
     {
@@ -18,6 +24,7 @@ class RegisterViewModel: ViewModel() {
             .addOnCompleteListener { task ->
             if (task.isSuccessful)
             {
+                loginStatus.postValue(true)
                 Log.d(TAG,"create user with email: success")
             }
                 else
