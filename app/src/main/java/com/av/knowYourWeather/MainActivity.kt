@@ -31,7 +31,9 @@ import androidx.navigation.NavController
 import com.av.knowYourWeather.Login.LoginActivity
 import com.av.knowYourWeather.Viewmodel.MainViewModel
 import com.av.knowYourWeather.ui.theme.DigiLearnTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 lateinit var viewModel: MainViewModel
 

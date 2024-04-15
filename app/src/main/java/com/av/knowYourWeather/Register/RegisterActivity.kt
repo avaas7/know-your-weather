@@ -42,13 +42,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.av.digiLearn.R
 import com.av.knowYourWeather.Dashboard.DashboardActivity
 import com.av.knowYourWeather.Login.LoginActivity
-import com.av.knowYourWeather.R
 import com.av.knowYourWeather.Viewmodel.RegisterViewModel
 import com.av.knowYourWeather.ui.theme.DigiLearnTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var viewModel: RegisterViewModel

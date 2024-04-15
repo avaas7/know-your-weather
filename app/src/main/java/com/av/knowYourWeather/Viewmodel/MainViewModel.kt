@@ -3,6 +3,7 @@ package com.av.knowYourWeather.Viewmodel
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 class MainViewModel: ViewModel() {
     private val TAG ="MAIN_VIEW_MODEL_TAG";

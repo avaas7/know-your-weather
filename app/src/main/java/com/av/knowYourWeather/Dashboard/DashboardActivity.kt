@@ -63,11 +63,15 @@ import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.av.knowYourWeather.Login.LoginActivity
 import com.av.knowYourWeather.Viewmodel.WeatherViewModel
+import com.av.knowYourWeather.di.DaggerAppComponent
+import com.av.knowYourWeather.di.MyApplication
 import com.av.knowYourWeather.model.CurrentWeatherResponse
 import com.av.knowYourWeather.model.ForecastWeatherResponse
 import com.av.knowYourWeather.model.ForecastdayItem
 import com.av.knowYourWeather.ui.theme.DigiLearnTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
 //
 //weather api key: 8186ffa9755f41e89da182836240103
@@ -79,15 +83,20 @@ data class TabBarItem(
     val badgeAmount: Int? = null
 )
 
+@AndroidEntryPoint
 class DashboardActivity : ComponentActivity() {
 
-    private val weatherViewModel by lazy { WeatherViewModel() }
+
+    @Inject
+    lateinit var weatherViewModel: WeatherViewModel
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (application as MyApplication).appComponent.inject(this)
         setContent {
+            
             val homeTab = TabBarItem(
                 title = "Current",
                 selectedIcon = Icons.Filled.Place,
@@ -174,6 +183,7 @@ class DashboardActivity : ComponentActivity() {
                 // BasicTextField(value = , onValueChange = )
                 Button(
                     onClick = {
+          //              viewModelScope.
                         weatherViewModel.getCurrentWeatherData(country)
                         weatherViewModel.getForecastWeatherData(country)
                     },

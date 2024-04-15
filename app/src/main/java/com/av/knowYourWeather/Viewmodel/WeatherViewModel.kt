@@ -4,18 +4,26 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.av.knowYourWeather.Network.ApIConfig
+import com.av.knowYourWeather.Repository.WeatherRepository
 import com.av.knowYourWeather.model.CurrentWeatherResponse
 import com.av.knowYourWeather.model.ForecastWeatherResponse
+import com.av.knowYourWeather.model.Result
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import retrofit2.Callback
+import kotlinx.coroutines.launch
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
-class WeatherViewModel:ViewModel() {
+@HiltViewModel
+class WeatherViewModel @Inject constructor(var weatherRepository: WeatherRepository) : ViewModel() {
 
     private val _currentWeatherDataStateFlow = MutableStateFlow<CurrentWeatherResponse?>(null)
     val currentWeatherDataStateFlow = _currentWeatherDataStateFlow.asStateFlow()
@@ -26,94 +34,49 @@ class WeatherViewModel:ViewModel() {
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
-
-/*    private val _isError = MutableLiveData<Boolean>()
-    val isError: LiveData<Boolean> get() = _isError
-
-
-    var errorMessage: String = ""
-        private set
-*/
-
     var auth = Firebase.auth;
 
-    fun userLogOut()
-    {
+    fun userLogOut() {
         auth.signOut()
     }
 
-
-    fun getCurrentWeatherData(city: String) {
-        _isLoading.value = true
-//        _isError.value = true
-
-     //   val client = ApIConfig.getApiService().getCurrentWeather(city = city, days = 7)
-    val client = ApIConfig.getApiService().getCurrentWeather(city = city)
-
-        // Send API request using Retrofit
-        client.enqueue(object : Callback<CurrentWeatherResponse> {
-
-            override fun onResponse(
-                call: Call<CurrentWeatherResponse>,
-                response: Response<CurrentWeatherResponse>
-            ) {
-                Log.d("av_tag","response recieved")
-                val responseBody = response.body()
-                if (!response.isSuccessful || responseBody == null) {
-                    onError("Data Processing Error")
-                    return
+     fun getForecastWeatherData(city: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = weatherRepository.getForecastWeatherData(city)
+            when (result) {
+                is Result.Success<ForecastWeatherResponse> -> {
+                    _forecastWeatherDataStateFlow.value = result.data
                 }
 
-                Log.d("av_tag","response success")
-
-                _isLoading.value = false
-                _currentWeatherDataStateFlow.value = responseBody
-            }
-
-            override fun onFailure(call: Call<CurrentWeatherResponse>, t: Throwable) {
-                t.message?.let { onError(it) }
-                t.printStackTrace()
-            }
-
-        })
-    }
-
-    fun getForecastWeatherData(city: String) {
-        _isLoading.value = true
-//        _isError.value = true
-
-        //   val client = ApIConfig.getApiService().getCurrentWeather(city = city, days = 7)
-        val client = ApIConfig.getApiService().getForecastWeather(city = city, days = 14)
-
-        // Send API request using Retrofit
-        client.enqueue(object : Callback<ForecastWeatherResponse> {
-
-            override fun onResponse(
-                call: Call<ForecastWeatherResponse>,
-                response: Response<ForecastWeatherResponse>
-            ) {
-                Log.d("av_tag","response recieved")
-                val responseBody = response.body()
-                if (!response.isSuccessful || responseBody == null) {
-                    onError("Data Processing Error")
-                    return
+                else -> {
+                    onError((result as? Result.Error)?.message ?: "UnKnown Error")
                 }
-
-                Log.d("av_tag","response success")
-
-                _isLoading.value = false
-                _forecastWeatherDataStateFlow.value = responseBody
             }
-
-            override fun onFailure(call: Call<ForecastWeatherResponse>, t: Throwable) {
-                t.message?.let { onError(it) }
-                t.printStackTrace()
-            }
-        })
+            _isLoading.value = false
+        }
     }
 
     private fun onError(s: String) {
 
     }
+
+    fun getCurrentWeatherData(city: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = weatherRepository.getCurrentWeatherData(city)
+            when (result) {
+                is Result.Success<CurrentWeatherResponse> -> {
+                    _currentWeatherDataStateFlow.value = result.data
+                }
+
+                else -> {
+                    onError((result as? Result.Error)?.message ?: "UnKnown Error")
+                }
+            }
+            _isLoading.value = false
+        }
+    }
+
 
 }

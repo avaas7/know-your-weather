@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 class RegisterViewModel : ViewModel() {
 

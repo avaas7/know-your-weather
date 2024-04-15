@@ -47,7 +47,9 @@ import com.av.knowYourWeather.Dashboard.DashboardActivity
 import com.av.knowYourWeather.Register.RegisterActivity
 import com.av.knowYourWeather.Viewmodel.LoginViewModel
 import com.av.knowYourWeather.ui.theme.DigiLearnTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginActivity : ComponentActivity() {
     private val viewModel by lazy { LoginViewModel() }
     var email by mutableStateOf("AvashPalikhe@gmail.com")
